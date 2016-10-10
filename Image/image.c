@@ -71,12 +71,12 @@ void define_pixel(SDL_Surface* img , int x , int y , Uint32 pixel)
 
 
 
-SDL_Surface* resize_img(SDL_Surface *img)
+/*SDL_Surface* resize_img(SDL_Surface *img)
 {
     SDL_Surface *new = NULL;
     int i = 0 , j = 0 , x = 0 , y = 0;
     
-}
+}*/
 
 
 
@@ -102,7 +102,7 @@ SDL_Surface *grey_lvl(SDL_Surface* img)
 SDL_Surface* black_and_white(SDL_Surface* img)
 {
     Uint32 pix , pixel;
-    Uint32 ref_pixel = SDL_MapRGB(img -> format , 128 , 128 , 128);
+    Uint32 ref_pixel = SDL_MapRGB(img -> format , 42 , 42 , 42);
     for (int y = 0 ; y < img -> h ; y++)
     {
         for (int x = 0; x < img -> w ; x++)
@@ -120,8 +120,8 @@ SDL_Surface* black_and_white(SDL_Surface* img)
 int main ()
 {
 	SDL_Surface* img = load_img();
-	//SDL_Surface* new = grey_lvl(img);
-	SDL_Surface* new = black_and_white(img);
+	SDL_Surface *ttt = grey_lvl(img);
+	SDL_Surface* new = black_and_white(ttt);
 	SDL_Surface* screen = SDL_SetVideoMode(1200, 700, 0, SDL_SWSURFACE);
 	SDL_BlitSurface(new, NULL , screen, NULL);
 	SDL_UpdateRect(screen, 0 , 0 , 1200 , 700);
