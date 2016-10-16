@@ -1,0 +1,211 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ReseauNeurone3
+{
+    class Program
+    {
+
+        static void Main(string[] args)
+        {
+            int[] nbNeurones = new int[] { 2, 3, 1 };
+            double[] liaisons = new double[9];
+            double[] neurones = new double[6];
+
+            Random rand = new Random();
+
+            int i = 0;
+            foreach (double d in liaisons)
+            {
+                liaisons[i] = 2 * rand.NextDouble() - 1;
+                i++;
+            }
+
+            double erreur = 1;
+            int count = 0;
+            while (erreur > 0.0001)
+            {
+                erreur = teach(nbNeurones, liaisons, neurones, new double[] { 1, 0 }, new double[] { 1 });
+                erreur += teach(nbNeurones, liaisons, neurones, new double[] { 1, 1 }, new double[] { 0 });
+                erreur += teach(nbNeurones, liaisons, neurones, new double[] { 0, 1 }, new double[] { 1 });
+                erreur += teach(nbNeurones, liaisons, neurones, new double[] { 0, 0 }, new double[] { 0 });
+                erreur /= 4;
+                if (count % 50000 == 0)
+                {
+                    Console.WriteLine(erreur);
+                }
+                count++;
+            }
+            Console.WriteLine("count : " + count);
+            Console.WriteLine("taux d'erreur : " + erreur);
+
+            //teach(nbNeurones, liaisons, neurones, new double[] { 0, 0 }, new double[] { 0 });
+
+            compute(nbNeurones, liaisons, neurones, 1, 1);
+            display(nbNeurones, liaisons, neurones);
+            compute(nbNeurones, liaisons, neurones, 0, 0);
+            display(nbNeurones, liaisons, neurones);
+            compute(nbNeurones, liaisons, neurones, 0, 1);
+            display(nbNeurones, liaisons, neurones);
+            compute(nbNeurones, liaisons, neurones, 1, 0);
+            display(nbNeurones, liaisons, neurones);
+            Console.ReadLine();
+        }
+
+        public static double getNeurone(int[] nbNeurones, double[] liaisons, double[] neurones, int couche, int index)
+        {
+            if (index >= nbNeurones[couche])
+                Console.WriteLine("! depassement 'get' neurone sur la couche " + couche + " ! ");
+            int i = 0;
+            for (int j = 0; j < couche; j++)
+            {
+                i += nbNeurones[j];
+            }
+            return neurones[i + index];
+        }
+
+        public static void setNeurone(int[] nbNeurones, double[] liaisons, double[] neurones, int couche, int index, double newVal)
+        {
+            if (index >= nbNeurones[couche])
+                Console.WriteLine("! depassement 'set' neurone sur la couche " + couche + " ! ");
+            int i = 0;
+            for (int j = 0; j < couche; j++)
+            {
+                i += nbNeurones[j];
+            }
+            neurones[i + index] = newVal;
+        }
+
+        public static double getLiaisons(int[] nbNeurones, double[] liaisons, double[] neurones, int coucheN1, int indexN1, int indexN2)
+        {
+            int couchesPrecedentes = 0;
+            if (coucheN1 > 0)
+            {
+                for (int i = 0; i < coucheN1; i++)
+                {
+                    couchesPrecedentes += nbNeurones[i] * nbNeurones[i + 1];
+                }
+            }
+            return liaisons[couchesPrecedentes + nbNeurones[coucheN1 + 1] * indexN1 + indexN2];
+        }
+
+        public static void setLiaisons(int[] nbNeurones, double[] liaisons, double[] neurones, int coucheN1, int indexN1, int indexN2, double newVal)
+        {
+            int couchesPrecedentes = 0;
+            if (coucheN1 > 0)
+            {
+                for (int i = 0; i < coucheN1; i++)
+                {
+                    couchesPrecedentes += nbNeurones[i] * nbNeurones[i + 1];
+                }
+            }
+            liaisons[couchesPrecedentes + nbNeurones[coucheN1 + 1] * indexN1 + indexN2] = newVal;
+        }
+
+        public static void display(int[] nbNeurones, double[] liaisons, double[] neurones, bool displayLiaisons = true)
+        {
+            int couche = 0;
+            foreach (int i in nbNeurones)
+            {
+                Console.WriteLine();
+                for (int j = 0; j < i; j++)
+                {
+                    Console.Write("  (" + getNeurone(nbNeurones, liaisons, neurones, couche, j) + ")");
+                    if (couche < nbNeurones.Length - 1 && displayLiaisons)
+                    {
+                        Console.Write("{ ");
+                        for (int k = 0; k < nbNeurones[couche + 1] - 1; k++)
+                        {
+                            Console.Write(getLiaisons(nbNeurones, liaisons, neurones, couche, j, k) + " | ");
+                        }
+                        Console.Write(getLiaisons(nbNeurones, liaisons, neurones, couche, j, nbNeurones[couche + 1] - 1));
+                        Console.Write(" }");
+                    }
+                    Console.Write("  ");
+                }
+                Console.WriteLine();
+                couche++;
+            }
+        }
+
+        public static double[] compute(int[] nbNeurones, double[] liaisons, double[] neurones, params double[] entrees)
+        {
+            for (int i = 0; i < nbNeurones[0]; i++)
+            {
+                neurones[i] = entrees[i];
+            }
+            for (int couche = 1; couche < nbNeurones.Length; couche++)
+            {
+                for (int i = 0; i < nbNeurones[couche]; i++)
+                {
+                    double sum = 0;
+                    for (int j = 0; j < nbNeurones[couche - 1]; j++)
+                    {
+                        sum += getNeurone(nbNeurones, liaisons, neurones, couche - 1, j) * getLiaisons(nbNeurones, liaisons, neurones, couche - 1, j, i);
+                    }
+                    setNeurone(nbNeurones, liaisons, neurones, couche, i, sigmoide(sum));
+                }
+            }
+            double[] results = new double[nbNeurones[nbNeurones.Length - 1]];
+            for (int i = 0; i < nbNeurones[nbNeurones.Length - 1]; i++)
+            {
+                results[i] = getNeurone(nbNeurones, liaisons, neurones, nbNeurones.Length - 1, i);
+            }
+            return results;
+        }
+
+        public static double teach(int[] nbNeurones, double[] liaisons, double[] neurones, double[] entrees, double[] sorties)
+        {
+            double[] results = compute(nbNeurones, liaisons, neurones, entrees);
+            double error = 0;
+            for (int i = 0; i < nbNeurones[nbNeurones.Length - 1]; i++)
+            {
+                error += Math.Abs(getNeurone(nbNeurones, liaisons, neurones, nbNeurones.Length - 1, i) - sorties[i]);
+            }
+            error /= nbNeurones[nbNeurones.Length - 1];
+
+            double[] deltas = new double[neurones.Length];
+
+            for (int i = 0; i < nbNeurones[nbNeurones.Length - 1]; i++)
+            {
+                setNeurone(nbNeurones, liaisons, deltas, nbNeurones.Length - 1, i, sorties[i] - getNeurone(nbNeurones, liaisons, neurones, nbNeurones.Length - 1, i));
+            }
+
+
+            for (int i = nbNeurones.Length - 2; i > 0; i--)
+            {
+                for (int j = 0; j < nbNeurones[i]; j++)
+                {
+                    double valeur = getNeurone(nbNeurones, liaisons, neurones, i, j);
+                    double deltaSum = 0;
+                    for (int k = 0; k < nbNeurones[i + 1]; k++)
+                    {
+                        deltaSum += getNeurone(nbNeurones, liaisons, deltas, i + 1, k) * getLiaisons(nbNeurones, liaisons, neurones, i, j, k);
+                    }
+                    setNeurone(nbNeurones, liaisons, deltas, i, j, valeur * (1 - valeur) * deltaSum);
+                }
+            }
+            for (int i = 0; i < nbNeurones.Length - 1; i++)
+            {
+                for (int j = 0; j < nbNeurones[i]; j++)
+                {
+                    for (int k = 0; k < nbNeurones[i + 1]; k++)
+                    {
+                        double tauxApprentissage = 0.3;
+                        setLiaisons(nbNeurones, liaisons, neurones, i, j, k, getLiaisons(nbNeurones, liaisons, neurones, i, j, k) + tauxApprentissage * getNeurone(nbNeurones, liaisons, neurones, i, j) * getNeurone(nbNeurones, liaisons, deltas, i + 1, k));
+                    }
+                }
+            }
+
+            return error;
+        }
+        
+        public static double sigmoide(double x)
+        {
+            return 1d / (1d + Math.Exp(-x));
+        }
+    }
+}
