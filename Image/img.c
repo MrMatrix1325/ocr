@@ -71,7 +71,8 @@ void define_pixel(SDL_Surface* img , int x , int y , Uint32 pixel)
 
 
 
-void SDL_redim(int W2, int H2, SDL_Surface *img) 
+
+SDL_Surface* SDL_redim(int W2, int H2, SDL_Surface *img) 
 {
 	float W = (float)img->w;
 	float H = (float)img->h;
@@ -90,10 +91,9 @@ void SDL_redim(int W2, int H2, SDL_Surface *img)
 			int maxy = miny+1;
 			double fx = valx-minx;
 			double fy = valy-miny; 
- 
-			Uint8 r;
-			Uint8 g;
-			Uint8 b;
+
+			Uint8 r, g, b, r1, g1, b1, r2, g2, b2, r3, g3, b3;
+                        Uint8 r4, g4, b4;
 			Uint32 pixel = get_pixel(img, i, j);
 			SDL_GetRGB(pixel, img->format, &r, &g, &b);
 
@@ -102,22 +102,6 @@ void SDL_redim(int W2, int H2, SDL_Surface *img)
 			Uint32 maxxminy = get_pixel(img, maxx, miny);
 			Uint32 maxxmaxy = get_pixel(img, maxx, maxy);
 
-			Uint8 r1;
-			Uint8 g1;
-			Uint8 b1;
-
-			Uint8 r2;
-			Uint8 g2;
-			Uint8 b2;
-
-			Uint8 r3;
-			Uint8 g3;
-			Uint8 b3;
-
-			Uint8 r4;
-			Uint8 g4;
-			Uint8 b4;
-			
 			SDL_GetRGB(minxminy, img->format, &r1, &g1, &b1);
 			SDL_GetRGB(maxxminy, img->format, &r2, &g2, &b2);
 			SDL_GetRGB(minxmaxy, img->format, &r3, &g3, &b3);
@@ -132,7 +116,7 @@ void SDL_redim(int W2, int H2, SDL_Surface *img)
 			define_pixel(img, i, j, pixel);
 		}
 	}
-	
+	return img;
 }
 
 
@@ -203,11 +187,11 @@ SDL_Surface* superposition(SDL_Surface* img)
 int main ()
 {
 	SDL_Surface* img = load_img();
-	//SDL_redim(1200 , 700, img);
+	//SDL_Surface* yes = SDL_redim(1200 , 700, img);
 	SDL_Surface *ttt = grey_lvl(img);
 	SDL_Surface* new = black_and_white(ttt);
 	SDL_Surface* screen = SDL_SetVideoMode(1200, 700, 0, SDL_SWSURFACE);
-	SDL_BlitSurface(img, NULL , screen, NULL);
+	SDL_BlitSurface(new, NULL , screen, NULL);
 	SDL_UpdateRect(screen, 0 , 0 , 1200 , 700);
 	sleep(3);
 	SDL_Surface *image = superposition(new);
