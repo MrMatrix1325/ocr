@@ -68,19 +68,18 @@ int main(int argc, char* argv[])
 {
     	if ( argc < 2 )
         	errx(1, "must provide an argument");
-    	//SDL_Surface* img = NULL , *ecran;
-	SDL_Surface* img = NULL;
-    	//init_sdl();
+    	SDL_Surface* img = NULL , *ecran;
+    	init_sdl();
     	img = load_image(argv[1]);
- 	//ecran = display_image(img);
+ 	ecran = display_image(img);
 	
 	SDL_Surface* img_redim = SDL_redim(100, 100, img);
 	SDL_SaveBMP(img_redim, "img_redim.bmp");
-	//ecran = display_image(img_redim);
+	ecran = display_image(img_redim);
 
 	SDL_Surface* image_decoupee = Bloc_de_caractere(img_redim);
 	SDL_SaveBMP(image_decoupee, "image_decoupee.bmp");
-	//ecran = display_image(img_decoupee);
+	ecran = display_image(image_decoupee);
 
 	SDL_FreeSurface(img_redim);
 	SDL_FreeSurface(image_decoupee);
