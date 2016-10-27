@@ -274,26 +274,9 @@ void Bloc_de_caractere_ingreenimg(SDL_Surface *img, int *startx, int *starty)
 	}
 }
 
-SDL_Surface* Bloc_de_caractere(SDL_Surface *img, int *startx, int *starty)
+void Bloc_de_caractere(SDL_Surface *img)
 {
-	// (startx, starty) -> the firts white pixel
-        //int startx = 0;
-        //int starty = 0;
-	int bool = 1;
-        for (int y = 0; y < img->h; ++y)
-        {
-            	for (int x = 0; x < img->w; ++x)
-        	{
-                	Uint32 pixel = getpixel(img, x, y);
-                    	if (pixel == SDL_MapRGBA(img->format, 255, 255, 255, 255) && bool == 1)
-                    	{
-                        	*startx = x;
-                        	*starty = y;
-				bool = 0;
-                    	}
-
-                }
-	}
+        
 
 	// L -> list of all white pixels already visited from L[2] 
 	// L[0] = min_pixel && L[1] = max_pixel 
@@ -306,11 +289,65 @@ SDL_Surface* Bloc_de_caractere(SDL_Surface *img, int *startx, int *starty)
 	//L[1]
 	*(L + 2) = 0;
 	*(L + 3) = 0;
+    
+    int startx = 0;
+    int starty = 0;
 
-	L = Find_min_and_max_pixels(img, *startx, *starty, L);
+    
+    int is_finish = 0;
+    int i = 0;
+    while (is_finish == 0)
+    {
+        // (startx, starty) -> the firts white pixel
+        //int startx = 0;
+        //int starty = 0;
+        is_finish = 1;
+        for (int y = 0; y < img->h; ++y)
+        {
+            for (int x = 0; x < img->w; ++x)
+            {
+                 Uint32 pixel = getpixel(img, x, y);
+                 if (pixel == SDL_MapRGBA(img->format, 255, 255, 255, 255) && is_finish == 1)
+                 {
+                     startx = x;
+                     starty = y;
+                     is_finish = 0;
+                 }
+
+            }
+        }
+        *(L + 0) = 2147483647;
+        *(L + 1) = 2147483647;
+        *(L + 2) = 0;
+        *(L + 3) = 0;
+        L = Find_min_and_max_pixels(img, startx, starty, L);
+        SDL_Surface* image_decoupee = decoupe_image(img, L);
+
+		char* filename = malloc((10) * sizeof(char));
+		*(filename + 0) = 'C';
+		*(filename + 1) = 'h';
+		*(filename + 2) = 'a';
+		*(filename + 3) = 'r';
+		*(filename + 4) = (char)(i+49);
+		*(filename + 5) = '.';
+		*(filename + 6) = 'b';
+		*(filename + 7) = 'm';
+		*(filename + 8) = 'p';
+		*(filename + 9) = '\0';
+		SDL_SaveBMP(image_decoupee, filename);
+		SDL_FreeSurface(image_decoupee);
+		++i;
+    }
+    
+    
+    
+    
+    
+    
+	/*L = Find_min_and_max_pixels(img, *startx, *starty, L);
 
 	SDL_Surface* image_decoupee = decoupe_image(img, L);
-        return image_decoupee;
+        return image_decoupee;*/
 }
 
 int* Find_min_and_max_pixels(SDL_Surface *img, int x, int y, int *L)

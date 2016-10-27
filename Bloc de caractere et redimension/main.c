@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 		char* filename = malloc((9) * sizeof(char));
 		*(filename + 0) = 'c';
 		*(filename + 1) = 'h';
-		*(filename + 2) = 'a';
+		*(filename + 2) = 'h';
 		*(filename + 3) = (char)(i+49);
 		*(filename + 4) = '.';
 		*(filename + 5) = 'b';
@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 	SDL_FreeSurface(img_green);
 	SDL_FreeSurface(img_green2);*/
 
-	//Bloc_de_caractere_ingreenimg(img, startx, starty);
+	Bloc_de_caractere(img);
 
 
 	/*find_next_pixel_notgreen(img, startx, starty);
@@ -124,8 +124,6 @@ int main(int argc, char* argv[])
 	        }
 	}
 	SDL_SaveBMP(img, "AAAAAAA.bmp");*/
-
-
 
 
 	SDL_FreeSurface(img);
