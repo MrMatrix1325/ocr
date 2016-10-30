@@ -20,7 +20,7 @@ Uint32 get_pixel(SDL_Surface *img, int x , int y)
     	int bpp = img -> format -> BytesPerPixel;
     	Uint8 *pix = (Uint8*)img->pixels + y * img->pitch + x * bpp;
     	switch(bpp)
-    	{	
+    	{
     	case 1:
 		return *pix;
 	case 2:
@@ -72,7 +72,7 @@ void define_pixel(SDL_Surface* img , int x , int y , Uint32 pixel)
 
 
 
-SDL_Surface* SDL_redim(int W2, int H2, SDL_Surface *img) 
+SDL_Surface* SDL_redim(int W2, int H2, SDL_Surface *img)
 {
 	float W = (float)img->w;
 	float H = (float)img->h;
@@ -90,7 +90,7 @@ SDL_Surface* SDL_redim(int W2, int H2, SDL_Surface *img)
 			int maxx = minx+1;
 			int maxy = miny+1;
 			double fx = valx-minx;
-			double fy = valy-miny; 
+			double fy = valy-miny;
 
 			Uint8 r, g, b, r1, g1, b1, r2, g2, b2, r3, g3, b3;
                         Uint8 r4, g4, b4;
@@ -106,7 +106,7 @@ SDL_Surface* SDL_redim(int W2, int H2, SDL_Surface *img)
 			SDL_GetRGB(maxxminy, img->format, &r2, &g2, &b2);
 			SDL_GetRGB(minxmaxy, img->format, &r3, &g3, &b3);
 			SDL_GetRGB(maxxmaxy, img->format, &r4, &g4, &b4);
-			
+
 
 			r = r1 * (1-fx)*(1-fy) + r2 * fx * (1-fy) + r3 * (1-fx)*fy + r4 *fx*fy;
 			g = g1 * (1-fx)*(1-fy) + g2 * fx * (1-fy) + g3 * (1-fx)*fy + g4 *fx*fy;
@@ -122,7 +122,7 @@ SDL_Surface* SDL_redim(int W2, int H2, SDL_Surface *img)
 
 
 SDL_Surface *grey_lvl(SDL_Surface* img)
-{	
+{
     Uint8 r , g , b;
     Uint32 pixel, newpixel;
     for (int y = 0 ; y < img -> h ; y++)
@@ -137,7 +137,7 @@ SDL_Surface *grey_lvl(SDL_Surface* img)
 	}
     }
     return img;
-}	
+}
 
 SDL_Surface* black_and_white(SDL_Surface* img)
 {
@@ -186,7 +186,7 @@ SDL_Surface* superposition(SDL_Surface* img)
 
 int main ()
 {
-	SDL_Surface* img = load_img();
+	SDL_Surface* img = IMG_Load("img.bmp");
 	//SDL_Surface* yes = SDL_redim(1200 , 700, img);
 	SDL_Surface *ttt = grey_lvl(img);
 	SDL_Surface* new = black_and_white(ttt);

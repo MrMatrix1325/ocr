@@ -50,6 +50,68 @@ void putpixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel) {
   }
 }
 
+SDL_Surface *grey_lvl(SDL_Surface* img)
+{
+  Uint8 r , g , b;
+  Uint32 pixel, newpixel;
+  for (int y = 0 ; y < img -> h ; y++)
+  {
+    for (int x = 0 ; x < img -> w ; x++)
+    {
+      pixel = getpixel(img , x , y);
+      SDL_GetRGB(pixel , img->format , &r , &g , &b);
+      float mid = ((0.3 * r  + 0.59 * g + 0.11 * b) /3);
+      newpixel = SDL_MapRGB(img -> format , mid , mid  , mid );
+      putpixel(img , x , y , newpixel);
+    }
+  }
+  return img;
+}
+
+SDL_Surface* black_and_white(SDL_Surface* img)
+{
+  Uint32 pix , pixel;
+  Uint32 ref_pixel = SDL_MapRGB(img -> format , 42 , 42 , 42);
+  for (int y = 0 ; y < img -> h ; y++)
+  {
+    for (int x = 0; x < img -> w ; x++)
+    {
+      pixel = getpixel(img , x , y);
+      if (pixel > ref_pixel)
+      pix = SDL_MapRGB(img -> format , 255, 255 , 255);
+      else
+      pix = SDL_MapRGB(img -> format , 0 , 0 , 0);
+      putpixel(img , x , y , pix);
+    }
+  }
+  return img ;
+}
+
+SDL_Surface* superposition(SDL_Surface* img)
+{
+    int i = 2;
+    Uint32 pix1 , pix2 , pixel;
+    for (int y = 0 ; y < img -> h ; ++y)
+    {
+	i = 2;
+	for (int x = 0 ; x < (img -> w) - 2 ; ++x)
+	{
+	    pix1 = getpixel(img , x , y);
+	    pix2 = getpixel(img , i , y);
+	    if (pix1 != pix2)
+	    {
+		pixel = SDL_MapRGB(img->format , 255 , 255 , 255);
+	    }
+	    else
+	    {
+		pixel = SDL_MapRGB(img->format , 0 , 0 , 0);
+	    }
+	    putpixel(img , x , y , pixel);
+	    ++i;
+	}
+   }
+   return img;
+}
 SDL_Surface* SDL_redim(int W2, int H2, SDL_Surface *img)
 {
   SDL_Surface* img_redim = NULL;
@@ -154,14 +216,14 @@ int* Find_min_and_max_pixels(SDL_Surface *img, int x, int y, int *L)
     *(L + 3) = y;
 
   putpixel(img, x, y, SDL_MapRGBA(img->format, 255, 255, 254,255));
-  Uint32 pix= SDL_MapRGBA(img->format, 255, 255, 255, 255));
+  Uint32 pix= SDL_MapRGBA(img->format, 255, 255, 255, 255);
   if (y + 1 < img->h && getpixel(img, x, y + 1) == pix)
     Find_min_and_max_pixels(img, x, y + 1, L);
   if (x + 1 < img->w && getpixel(img, x + 1 , y) == pix)
     Find_min_and_max_pixels(img, x + 1, y, L);
   if (y - 1 > 0 && getpixel(img, x, y - 1) == pix)
     Find_min_and_max_pixels(img, x, y - 1, L);
-  if (x - 1 > 0 && getpixel(img, x - 1, y) == )
+  if (x - 1 > 0 && getpixel(img, x - 1, y) == pix)
     Find_min_and_max_pixels(img, x - 1, y, L);
   return L;
 }
@@ -190,65 +252,3 @@ SDL_Surface* decoupe_image(SDL_Surface *img, int *L)
    return res;
 }
 
-SDL_Surface *grey_lvl(SDL_Surface* img)
-{
-    Uint8 r , g , b;
-    Uint32 pixel, newpixel;
-    for (int y = 0 ; y < img -> h ; y++)
-    {
-	for (int x = 0 ; x < img -> w ; x++)
-	{
-	     pixel = getpixel(img , x , y);
-             SDL_GetRGB(pixel , img->format , &r , &g , &b);
-             float mid = ((0.3 * r  + 0.59 * g + 0.11 * b) /3);
-	     newpixel = SDL_MapRGB(img -> format , mid , mid  , mid );
-             putpixel(img , x , y , newpixel);
-	}
-    }
-    return img;
-}
-
-SDL_Surface* black_and_white(SDL_Surface* img)
-{
-    Uint32 pix , pixel;
-    Uint32 ref_pixel = SDL_MapRGB(img -> format , 42 , 42 , 42);
-    for (int y = 0 ; y < img -> h ; y++)
-    {
-        for (int x = 0; x < img -> w ; x++)
-	{
-	    pixel = getpixel(img , x , y);
-	    if (pixel > ref_pixel)
-		pix = SDL_MapRGB(img -> format , 255, 255 , 255);
-	    else
-		pix = SDL_MapRGB(img -> format , 0 , 0 , 0);
-	    putpixel(img , x , y , pix);
-	}
-    }
-    return img ;
-}
-
-SDL_Surface* superposition(SDL_Surface* img)
-{
-    int i = 2;
-    Uint32 pix1 , pix2 , pixel;
-    for (int y = 0 ; y < img -> h ; ++y)
-    {
-	i = 2;
-	for (int x = 0 ; x < (img -> w) - 2 ; ++x)
-	{
-	    pix1 = getpixel(img , x , y);
-	    pix2 = getpixel(img , i , y);
-	    if (pix1 != pix2)
-	    {
-		pixel = SDL_MapRGB(img->format , 255 , 255 , 255);
-	    }
-	    else
-	    {
-		pixel = SDL_MapRGB(img->format , 0 , 0 , 0);
-	    }
-	    putpixel(img , x , y , pixel);
-	    ++i;
-	}
-   }
-   return img;
-}
