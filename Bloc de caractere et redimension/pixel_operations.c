@@ -125,6 +125,7 @@ SDL_Surface* SDL_redim(int W2, int H2, SDL_Surface *img)
 
 SDL_Surface* green(SDL_Surface *img)
 {
+	Uint32 vert = SDL_MapRGBA(img->format, 0, 255, 0, 255);
 	for (int y = 0; y < img->h; ++y)
         {
 		int y_isfull = 1;
@@ -142,7 +143,7 @@ SDL_Surface* green(SDL_Surface *img)
 		{
 			for (int x = 0; x < img->w; ++x)
         		{
-				putpixel(img, x, y, SDL_MapRGBA(img->format, 0, 255, 0,255));
+				putpixel(img, x, y, vert);
 			}
 		}
 	}
@@ -151,18 +152,19 @@ SDL_Surface* green(SDL_Surface *img)
 
 SDL_Surface* green2(SDL_Surface *img)
 {
+	Uint32 vert = SDL_MapRGBA(img->format, 0, 255, 0, 255);
 	for (int x = 0; x < img->w; ++x)
         {
 		for (int y = 0; y < img->h; ++y)
         	{
-			while(y < img->h && getpixel(img, x, y) == SDL_MapRGBA(img->format, 0, 255, 0,255))
+			while(y < img->h && getpixel(img, x, y) == vert)
 			{
 				++y;
 			}
 			int partialx_isfull = 1;
 			Uint32 xpixel = SDL_MapRGB(img->format, 0, 0, 0);
 			int y2 = y;
-			for (;y < img->h && getpixel(img, x, y) != SDL_MapRGBA(img->format, 0, 255, 0,255); ++y)
+			for (;y < img->h && getpixel(img, x, y) != vert; ++y)
         		{
 				Uint32 ypixel = getpixel(img, x, y);
 				if (xpixel != ypixel)
@@ -174,7 +176,7 @@ SDL_Surface* green2(SDL_Surface *img)
 			{
 				for (; y2 < y; ++y2)
         			{
-					putpixel(img, x, y2, SDL_MapRGBA(img->format, 0, 255, 0,255));
+					putpixel(img, x, y2, vert);
 				}
 			}
 		}
@@ -182,7 +184,7 @@ SDL_Surface* green2(SDL_Surface *img)
 	return img;
 }
 
-int find_next_pixel_notgreen(SDL_Surface *img, int *startx, int *starty)
+/*int find_next_pixel_notgreen(SDL_Surface *img, int *startx, int *starty)
 {
 	int bool = 1;
 	int there_is_a_pixel_not_green = 0;
@@ -206,8 +208,8 @@ int find_next_pixel_notgreen(SDL_Surface *img, int *startx, int *starty)
 
 int* Find_min_and_max_pixels_ingreenimg(SDL_Surface *img, int x, int y, int *L)
 {
-	//*(L+ (2 * len_L)) = x;
-	//*(L+ (2 * len_L +1)) = y;
+	// *(L+ (2 * len_L)) = x;
+	// *(L+ (2 * len_L +1)) = y;
 
 	*(L + 0) = x;
 	*(L + 1) = y;
@@ -272,30 +274,29 @@ void Bloc_de_caractere_ingreenimg(SDL_Surface *img, int *startx, int *starty)
 		SDL_FreeSurface(image_decoupee);
 		++i;
 	}
-}
+}*/
 
 void Bloc_de_caractere(SDL_Surface *img)
 {
         
 
-	// L -> list of all white pixels already visited from L[2] 
-	// L[0] = min_pixel && L[1] = max_pixel 
-	
-	//We suppose that we have less than 1000 pixels in our bloc
-	int *L = malloc(4 * sizeof (int));
-	//L[0]
-	*(L + 0) = 2147483647;
-	*(L + 1) = 2147483647;
-	//L[1]
-	*(L + 2) = 0;
-	*(L + 3) = 0;
+    // L -> list of minpixel and maxpixel 
+    // L[0],L[1] = min_pixel && L[2],L[3] = max_pixel c
+    int *L = malloc(4 * sizeof (int));
+    //L[0],L[1]
+    *(L + 0) = 2147483647;
+    *(L + 1) = 2147483647;
+    //L[2],L[3]
+    *(L + 2) = 0;
+    *(L + 3) = 0;
     
     int startx = 0;
     int starty = 0;
 
-    
     int is_finish = 0;
     int i = 0;
+    Uint32 vert = SDL_MapRGBA(img->format, 0, 255, 0, 255);
+    Uint32 blanc = SDL_MapRGBA(img->format, 255, 255, 255, 255);
     while (is_finish == 0)
     {
         // (startx, starty) -> the firts white pixel
@@ -307,7 +308,7 @@ void Bloc_de_caractere(SDL_Surface *img)
             for (int x = 0; x < img->w; ++x)
             {
                  Uint32 pixel = getpixel(img, x, y);
-                 if (pixel == SDL_MapRGBA(img->format, 255, 255, 255, 255) && is_finish == 1)
+                 if (pixel == blanc && is_finish == 1)
                  {
                      startx = x;
                      starty = y;
@@ -323,38 +324,34 @@ void Bloc_de_caractere(SDL_Surface *img)
         L = Find_min_and_max_pixels(img, startx, starty, L);
         SDL_Surface* image_decoupee = decoupe_image(img, L);
 
-		char* filename = malloc((10) * sizeof(char));
-		*(filename + 0) = 'C';
-		*(filename + 1) = 'h';
-		*(filename + 2) = 'a';
-		*(filename + 3) = 'r';
-		*(filename + 4) = (char)(i+49);
-		*(filename + 5) = '.';
-		*(filename + 6) = 'b';
-		*(filename + 7) = 'm';
-		*(filename + 8) = 'p';
-		*(filename + 9) = '\0';
-		SDL_SaveBMP(image_decoupee, filename);
-		SDL_FreeSurface(image_decoupee);
-		++i;
-    }
-    
-    
-    
-    
-    
-    
-	/*L = Find_min_and_max_pixels(img, *startx, *starty, L);
+	int x_filename = *(L + 0);
+	int y_filename = *(L + 1);
+	while(y_filename > 0 && getpixel(img, x_filename, y_filename) != vert)
+	{
+		--y_filename;
+	}
+	++y_filename;
 
-	SDL_Surface* image_decoupee = decoupe_image(img, L);
-        return image_decoupee;*/
+	char* filename = malloc((10) * sizeof(char));
+	*(filename + 0) = '(';
+	*(filename + 1) = (char)(y_filename);
+	*(filename + 2) = ',';
+	*(filename + 3) = (char)(x_filename);
+	*(filename + 4) = ')';
+	*(filename + 5) = '.';
+	*(filename + 6) = 'b';
+	*(filename + 7) = 'm';
+	*(filename + 8) = 'p';
+	*(filename + 9) = '\0';
+
+	SDL_SaveBMP(image_decoupee, filename);
+	SDL_FreeSurface(image_decoupee);
+	++i;
+    }
 }
 
 int* Find_min_and_max_pixels(SDL_Surface *img, int x, int y, int *L)
 {
-	//*(L+ (2 * len_L)) = x;
-	//*(L+ (2 * len_L +1)) = y;
-
 	if (x <  *(L + 0))
 		*(L + 0) = x;
 	if (y <  *(L + 1))
@@ -390,13 +387,13 @@ SDL_Surface* decoupe_image(SDL_Surface *img, int *L)
 	int y_img = y_min;
 	for (int y_res = 0; y_res < h+1; ++y_res)
 	{
-		int x_img = x_min;
-		for (int x_res = 0; x_res < w+1; ++x_res)
-		{
-			putpixel(res, x_res, y_res, getpixel(img, x_img, y_img));
-			++x_img;
-		}
-		++y_img;
+	    int x_img = x_min;
+	    for (int x_res = 0; x_res < w+1; ++x_res)
+	    {
+	        putpixel(res, x_res, y_res, getpixel(img, x_img, y_img));
+	        ++x_img;
+	    }
+	    ++y_img;
 	}
 	return res;
 	

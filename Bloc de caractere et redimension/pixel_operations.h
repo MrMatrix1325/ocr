@@ -14,8 +14,8 @@ int* Find_min_and_max_pixels(SDL_Surface *img, int i, int j, int *L);
 SDL_Surface* decoupe_image(SDL_Surface *img, int *L);
 SDL_Surface* green(SDL_Surface *img);
 SDL_Surface* green2(SDL_Surface *img);
-int find_next_pixel_notgreen(SDL_Surface *img, int *startx, int *starty);
+/*int find_next_pixel_notgreen(SDL_Surface *img, int *startx, int *starty);
 int* Find_min_and_max_pixels_ingreenimg(SDL_Surface *img, int x, int y, int *L);
-void Bloc_de_caractere_ingreenimg(SDL_Surface *img, int *startx, int *starty);
+void Bloc_de_caractere_ingreenimg(SDL_Surface *img, int *startx, int *starty);*/
  
 # endif

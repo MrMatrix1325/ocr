@@ -68,10 +68,11 @@ int main(int argc, char* argv[])
 {
     	if ( argc < 2 )
         	errx(1, "must provide an argument");
-    	SDL_Surface* img = NULL , *ecran;
-    	init_sdl();
+    	//SDL_Surface* img = NULL , *ecran;
+	SDL_Surface* img = NULL;
+    	//init_sdl();
     	img = load_image(argv[1]);
- 	ecran = display_image(img);
+ 	//ecran = display_image(img);
 	
 	int *T = malloc(4 * sizeof (int));
    	*(T + 0) = 0;
@@ -82,7 +83,7 @@ int main(int argc, char* argv[])
 	SDL_Surface* traitement1 = green(test_reduit);
 	traitement1 = green2(traitement1);
 	SDL_SaveBMP(traitement1,"traitement1.bmp");
-	ecran = display_image(traitement1);
+	//ecran = display_image(traitement1);
 	Bloc_de_caractere(traitement1);
 	SDL_FreeSurface(traitement1);
 	SDL_FreeSurface(img);
