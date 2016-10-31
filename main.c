@@ -1,24 +1,38 @@
-#include <stdlib.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include "image_operation.h"
-#include <unistd.h>
+# include "image_operation.h"
+# include <err.h>
+# include <stdlib.h>
 
-int main ()
+int main(int argc, char* argv[])
 {
-	SDL_Surface* img = IMG_Load("img.bmp");
-        SDL_Surface* yes = SDL_redim(1200 , 700, img);
-	SDL_Surface* ttt = grey_lvl(yes);
-	SDL_Surface* new = black_and_white(ttt);
-	SDL_Surface* screen = SDL_SetVideoMode(1200, 700, 
-0, SDL_SWSURFACE);
-	SDL_BlitSurface(new, NULL , screen, NULL);
-	SDL_UpdateRect(screen, 0 , 0 , 1200 , 700);
-	sleep(3);
-	SDL_Surface *image = superposition(new);
-	SDL_BlitSurface(image, NULL , screen, NULL);
-	SDL_UpdateRect(screen, 0 , 0 , 1200 , 700);
-	sleep(3);
+    	if ( argc < 2 )
+        	errx(1, "must provide an argument");
+    	SDL_Surface* img = NULL;
+    	init_sdl();
+    	img = load_image(argv[1]);
+ 	display_image(img);
+	SDL_Surface* img2 = SDL_redim(1200 , 700, img);
+	display_image(img2);
+	SDL_Surface* img3 = grey_lvl(img2);
+	display_image(img3);
+	SDL_Surface* img4 = black_and_white(img3);
+	display_image(img4);
+	SDL_Surface* img5 = superposition(img4);
+	display_image(img5);
+
+	int *T = malloc(4 * sizeof (int));
+   	*(T + 0) = 0;
+   	*(T + 1) = 0;
+  	*(T + 2) = 150;
+ 	*(T + 3) = 90;
+	SDL_Surface* img6= cut_image(img, T);
+	SDL_Surface* img7 = green(img6);
+	img7 = green2(img7);
+	SDL_SaveBMP(img7,"img7.bmp");
+	display_image(img7);
+	character_block(img7);
+	SDL_FreeSurface(img7);
+	SDL_FreeSurface(img);
 	return 0;
 }
+
 

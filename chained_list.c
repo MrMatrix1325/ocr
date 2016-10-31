@@ -40,3 +40,9 @@ void add(List *list , int coordx , int coordy)
 	new -> nxt = list -> first;
         list -> first = new;	
 }
+
+void course(List *list)
+{
+  Element *act;
+    
+}
