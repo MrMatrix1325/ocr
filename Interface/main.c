@@ -10,15 +10,21 @@ struct param{
   gchar 			*path;
 };
 
+void recup(struct param *param);
 
 void selec (struct param *par)
 {
   struct param *param = malloc(sizeof(struct param *));
   param->wid = gtk_file_selection_new("File Selection");
   gtk_widget_show(param->wid);
-  g_signal_connect(G_OBJECT(GTK_FILE_SELECTION(param->wid)->ok_button, G_CALLBACK(recup)
+  g_signal_connect(G_OBJECT(GTK_FILE_SELECTION(param->wid)->ok_button),"clicked", G_CALLBACK(recup), &param);
 }
 
+void recup (struct param *param)
+{
+  gchar *path = gtk_file_selection_get_filename(GTK_FILE_SELECTION(param->wid));
+  gtk_widget_destroy(param->wid); 
+}
 
 void OnDestroy(GtkWidget *pWidget, gpointer pData)
 {
@@ -27,9 +33,9 @@ void OnDestroy(GtkWidget *pWidget, gpointer pData)
 
 int main(int argc, char* argv[])
 {
-  if ( argc < 2 )
+  /*if ( argc < 2 )
     errx(1, "must provide an argument");
-  SDL_Surface* img = NULL;
+  SDL_Surface* img = NULL;*/
   init_sdl();
   struct param *par = malloc(sizeof(struct param *));
   GtkWidget *image;
