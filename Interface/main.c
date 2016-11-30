@@ -4,39 +4,121 @@
 # include <gtk/gtk.h>
 # include <assert.h>
 
+struct param{
+	GtkWidget *img;
+  char * path;
+};
 
-
-void choose(GtkWidget *button ,GtkWidget * image)
+void choose(GtkWidget *button ,struct param *para)
 {
-  GtkWidget *dialog;
+  GtkWidget *win;
   GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
   gint res;
 
-  dialog = gtk_file_chooser_dialog_new ("Open File",NULL,action,("_Cancel"),GTK_RESPONSE_CANCEL,("_Open"),
+  win = gtk_file_chooser_dialog_new ("Open File",NULL,action,("_Cancel"),GTK_RESPONSE_CANCEL,("_Open"),
                                       GTK_RESPONSE_ACCEPT,
                                       NULL);
 
+  gtk_dialog_run (GTK_DIALOG (win));
+  if (GTK_RESPONSE_ACCEPT)
+  {
+    SDL_Surface *img ;
+    GtkFileChooser *chooser = GTK_FILE_CHOOSER (win);
+    char *path = gtk_file_chooser_get_filename (chooser);
+    para->path = path;
+    img = load_image(path);
+    img = SDL_redim(1100,600,img);
+    SDL_SaveBMP(img,"redim");
+    gtk_image_set_from_file (GTK_IMAGE(para->img) , "redim");
+    free(img);
+    remove("redim");
+  }
+
+  gtk_widget_destroy (win);
+}
+
+void save_img(GtkWidget *button, struct param *para)
+{
+  GtkWidget *dialog;
+  GtkFileChooser *chooser;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+  gint res;
+
+  dialog = gtk_file_chooser_dialog_new ("Save File",
+                                      NULL,
+                                      action,
+                                      ("_Cancel"),
+                                      GTK_RESPONSE_CANCEL,
+                                      ("_Save"),
+                                      GTK_RESPONSE_ACCEPT,
+                                      NULL);
+  chooser = GTK_FILE_CHOOSER (dialog);
+
+  gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
   res = gtk_dialog_run (GTK_DIALOG (dialog));
   if (res == GTK_RESPONSE_ACCEPT)
   {
-    SDL_Surface *img ;
     char *filename;
-    GdkPixbuf *pb;
-    GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+
     filename = gtk_file_chooser_get_filename (chooser);
-    /*pb = gdk_pixbuf_new_from_file(filename , NULL);
-    pb = gdk_pixbuf_scale_simple(pb,1100,600,GDK_INTERP_BILINEAR);
-    image = gtk_image_new_from_pixbuf(pb);*/
-    img = load_image(filename);
-    img = SDL_redim(1100,600,img);
-    int ok = SDL_SaveBMP(img,"redim");
-    gtk_image_set_from_file (GTK_IMAGE(image) , "redim");
-    free(img);
-    remove("redim");
+    //gtk_image_save_to_file (filename);
     g_free (filename);
   }
 
   gtk_widget_destroy (dialog);
+
+
+}
+
+void reset_img(GtkWidget *button, struct param *para)
+{
+  SDL_Surface *img;
+  img = load_image(para->path);
+  img = SDL_redim(1100,600,img);
+  SDL_SaveBMP(img,"redimreset");
+  gtk_image_set_from_file(GTK_IMAGE(para->img), "redimreset");
+  free(img);
+  remove("redimreset");
+}
+
+void grey (GtkWidget *button , struct param *para)
+{
+  SDL_Surface *img;
+  img = load_image(para->path);
+  img = grey_lvl(img);
+  img = SDL_redim(1100,600,img);
+  SDL_SaveBMP(img, "$-greyimg");
+  gtk_image_set_from_file(GTK_IMAGE(para->img), "$-greyimg");
+  remove("$-greyimg");
+  free(img);
+}
+
+void black (GtkWidget *button, struct param *para)
+{
+  SDL_Surface *img;
+  img = load_image(para->path);
+  img = black_and_white(img);
+  img = SDL_redim(1100,600,img);
+  SDL_SaveBMP(img, "$-blackimg");
+  gtk_image_set_from_file(GTK_IMAGE(para->img), "$-blackimg");
+  remove("$-blackimg");
+  free(img);
+
+} 
+
+void ocr(GtkWidget *button, struct param *para)
+{
+  SDL_Surface *img;
+  img = load_image(para->path);
+  img = SDL_redim(1100,600,img);
+  img = grey_lvl(img);
+  img = black_and_white(img);
+  img = superposition(img);
+  // Segmentation blocs de caracteres
+
+  // RDN
+
+  // FENETRE + SAVE
 }
 
 void OnDestroy(GtkWidget *pWidget, gpointer pData)
@@ -46,34 +128,29 @@ void OnDestroy(GtkWidget *pWidget, gpointer pData)
 
 int main(int argc, char* argv[])
 {
-  /*if ( argc < 2 )
-    errx(1, "must provide an argument");
-  SDL_Surface* img = NULL;*/
   init_sdl();
-  GdkPixbuf *pixbuf , *pixbuf2;
+  GdkPixbuf *pixbuf ;
   GtkWidget *image;
-  GtkWidget *b_open, *b_save, *b_grey ,*b_black, *b_reset;
-  GtkWidget *pVbox, *align, *pHbox,*align2;
-  GtkRequisition *requi  ;
+  GtkWidget *b_open, *b_save, *b_grey ,*b_black, *b_reset ,*b_ocr;
+  GtkWidget *pVbox, *align, *pHbox;
+  struct param *param = malloc(sizeof(struct param*));
 
   gtk_init(&argc, &argv);
   align = gtk_alignment_new(0,0,0,0);
-  align2 = align;
-  requi->width = 0.5;
-  requi->height = 0.5;
 
-  //image = gtk_image_new_from_file("img.bmp");
   pixbuf = gdk_pixbuf_new_from_file("img.bmp",NULL);
   pixbuf = gdk_pixbuf_scale_simple(pixbuf,1100,600,GDK_INTERP_BILINEAR);
+  
   image = gtk_image_new_from_pixbuf(pixbuf);
   GtkWidget *pWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   g_signal_connect(G_OBJECT(pWindow),"destroy",G_CALLBACK(OnDestroy),NULL);
+  
   gtk_window_set_title (GTK_WINDOW(pWindow), "Tigereyes");
   gtk_window_set_position(GTK_WINDOW(pWindow), GTK_WIN_POS_CENTER);
-  //gtk_window_set_default_size(GTK_WINDOW(pWindow), 1100, 600);
+  
   pHbox = gtk_hbox_new(0, 2);
   pVbox = gtk_vbox_new(0, 10);
-  //gtk_container_add(GTK_CONTAINER(pWindow), align);
+ 
   gtk_container_add(GTK_CONTAINER(pWindow), pVbox);
   gtk_container_add(GTK_CONTAINER(pVbox), pHbox);
 
@@ -82,44 +159,28 @@ int main(int argc, char* argv[])
   b_grey = gtk_button_new_with_mnemonic("Grey level");
   b_black = gtk_button_new_with_mnemonic("Black and white");
   b_reset = gtk_button_new_with_mnemonic("Reset");
+  b_ocr = gtk_button_new_with_mnemonic("Start OCR");
   
-  gtk_widget_size_request(pVbox, requi);
+  param->img = image;
+  param->path = "img.bmp";
 
   gtk_box_pack_start(GTK_BOX(pHbox), b_open, 1, 0, 0);
   gtk_box_pack_start(GTK_BOX(pHbox), b_save, 1, 0, 0);
   gtk_box_pack_start(GTK_BOX(pHbox), b_grey, 1, 0, 0);
   gtk_box_pack_start(GTK_BOX(pHbox), b_black, 1, 0, 0);
   gtk_box_pack_start(GTK_BOX(pHbox), b_reset, 1, 0, 0);
+  gtk_box_pack_start(GTK_BOX(pHbox), b_ocr, 1, 0, 0);
   gtk_box_pack_start(GTK_BOX(pVbox), image , 1, 0, 0);
-  g_signal_connect(G_OBJECT(b_open),"clicked",G_CALLBACK(choose),image);
+
+  g_signal_connect(G_OBJECT(b_open),"clicked",G_CALLBACK(choose),param);
+  g_signal_connect(G_OBJECT(b_grey),"clicked",G_CALLBACK(grey),param);
+  g_signal_connect(G_OBJECT(b_black),"clicked",G_CALLBACK(black),param);
+  g_signal_connect(G_OBJECT(b_reset),"clicked",G_CALLBACK(reset_img),param);
+  g_signal_connect(G_OBJECT(b_save),"clicked",G_CALLBACK(save_img),param);
+ g_signal_connect(G_OBJECT(b_ocr),"clicked",G_CALLBACK(ocr),param);
   gtk_widget_show_all(pWindow);
   gtk_main();
   return EXIT_SUCCESS;
-    	/*img = load_image(argv[1]);
- 	display_image(img);
-	SDL_Surface* img2 = SDL_redim(1200 , 700, img);
-	display_image(img2);
-	SDL_Surface* img3 = grey_lvl(img2);
-	display_image(img3);
-	SDL_Surface* img4 = black_and_white(img3);
-	display_image(img4);
-	SDL_Surface* img5 = superposition(img4);
-	display_image(img5);
-
-	int *T = malloc(4 * sizeof (int));
-   	*(T + 0) = 0;
-   	*(T + 1) = 0;
-  	*(T + 2) = 150;
- 	*(T + 3) = 90;
-	SDL_Surface* img6= cut_image(img, T);
-	SDL_Surface* img7 = green(img6);
-	img7 = green2(img7);
-	SDL_SaveBMP(img7,"img7.bmp");
-	display_image(img7);
-	character_block(img7);
-	SDL_FreeSurface(img7);
-	SDL_FreeSurface(img);
-	return 0;*/
 }
 
 
