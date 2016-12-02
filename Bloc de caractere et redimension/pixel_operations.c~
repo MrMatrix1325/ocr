@@ -231,7 +231,7 @@ void Bloc_Iteratif(SDL_Surface *img)
 
 	image_decoupee = Rogne(image_decoupee);
 	image_decoupee = SDL_redim(10, 10, image_decoupee);
-	binarize(image_decoupee);
+	//binarize(image_decoupee);
 	SDL_SaveBMP(image_decoupee, filename);
 	SDL_FreeSurface(image_decoupee);
 
@@ -340,8 +340,9 @@ void binarize(SDL_Surface *img)
       SDL_GetRGB(pixel, img->format, &r, &g, &b);
       
       pixel = (r + g + b) / 3;
+      SDL_GetRGB(pixel, img->format, &r, &g, &b);
 
-      if(pixel >= (255 / 2))
+      if(pixel >= (255 *3 /2))
       {
 	putpixel(img, x, y, SDL_MapRGBA(img->format, 255, 255, 255,255));
       }

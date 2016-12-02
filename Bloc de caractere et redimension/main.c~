@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
         	errx(1, "must provide an argument");
     	//SDL_Surface* img = NULL , *ecran;
 	SDL_Surface* img = NULL;
-    	//init_sdl();
+    	init_sdl();
     	img = load_image(argv[1]);
  	//ecran = display_image(img);
 	

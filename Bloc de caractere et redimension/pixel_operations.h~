@@ -19,7 +19,6 @@ void Bloc_Green(SDL_Surface *img);
 struct tuple* Start_Green(SDL_Surface *img);
 void Bloc_Iteratif(SDL_Surface *img);
 SDL_Surface* Rogne(SDL_Surface *res);
-void binarize(SDL_Surface *img);
 /*int find_next_pixel_notgreen(SDL_Surface *img, int *startx, int *starty);
 int* Find_min_and_max_pixels_ingreenimg(SDL_Surface *img, int x, int y, int *L);
 void Bloc_de_caractere_ingreenimg(SDL_Surface *img, int *startx, int *starty);*/
