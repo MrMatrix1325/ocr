@@ -21,8 +21,8 @@ void choose(GtkWidget *button ,struct param *para)
                                       GTK_RESPONSE_ACCEPT,
                                       NULL);
 
-  gtk_dialog_run (GTK_DIALOG (win));
-  if (GTK_RESPONSE_ACCEPT)
+  int res = gtk_dialog_run (GTK_DIALOG (win));
+  if (res == GTK_RESPONSE_ACCEPT)
   {
     SDL_Surface *img ;
     GtkFileChooser *chooser = GTK_FILE_CHOOSER (win);
@@ -65,7 +65,7 @@ void save_img(GtkWidget *button, struct param *para)
   gtk_dialog_run (GTK_DIALOG (dialog));
   if (GTK_RESPONSE_ACCEPT)
   {
-    SDL_Surface *img = load_image(para->path); ;
+    SDL_Surface *img = load_image(para->path); 
     char *path = gtk_file_chooser_get_filename (chooser);
     if (para->black)
     {
@@ -158,7 +158,7 @@ void ocr(GtkWidget *button, struct param *para)
   // FENETRE + SAVE
 }
 
-void OnDestroy(GtkWidget *pWidget, gpointer pData)
+void OnDestroy()
 {
   gtk_main_quit();
 }
@@ -166,20 +166,14 @@ void OnDestroy(GtkWidget *pWidget, gpointer pData)
 int main(int argc, char* argv[])
 {
   init_sdl();
-  GdkPixbuf *pixbuf ;
   GtkWidget *image;
   GtkWidget *b_open, *b_save, *b_grey ,*b_black, *b_reset ,*b_ocr;
   GtkWidget *b_quit;
-  GtkWidget *pVbox, *align, *pHbox;
+  GtkWidget *pVbox, *pHbox;
   struct param *param = malloc(sizeof(struct param*));
 
-  gtk_init(&argc, &argv);
-  align = gtk_alignment_new(0,0,0,0);
+  gtk_init(&argc, &argv);  
 
-  /*pixbuf = gdk_pixbuf_new_from_file(NULL,NULL);
-  pixbuf = gdk_pixbuf_scale_simple(pixbuf,1100,600,GDK_INTERP_BILINEAR);
-  */
-  //image = gtk_image_new_from_pixbuf(pixbuf);
   image = gtk_image_new_from_file(NULL);
   GtkWidget *pWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   g_signal_connect(G_OBJECT(pWindow),"destroy",G_CALLBACK(OnDestroy),NULL);
