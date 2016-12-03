@@ -15,12 +15,16 @@ struct param{
 void choose(GtkWidget *button ,struct param *para)
 {
   GtkWidget *win;
+  GtkFileFilter *filter;
   GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
 
   win = gtk_file_chooser_dialog_new ("Open File",NULL,action,("_Cancel"),GTK_RESPONSE_CANCEL,("_Open"),
                                       GTK_RESPONSE_ACCEPT,
                                       NULL);
 
+  filter = gtk_file_filter_new();
+  gtk_file_filter_add_pixbuf_formats(filter);
+  gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(win), filter);
   int res = gtk_dialog_run (GTK_DIALOG (win));
   if (res == GTK_RESPONSE_ACCEPT)
   {
