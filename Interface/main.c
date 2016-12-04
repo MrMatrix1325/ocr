@@ -11,6 +11,19 @@ struct param{
   int black;
 };
 
+void error()
+{
+  GtkWidget *err ;
+  GtkWidget *label;
+  err = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW(err), "Error");
+  gtk_window_set_position(GTK_WINDOW(err), GTK_WIN_POS_CENTER);
+
+  label = gtk_label_new("No current Image");
+  gtk_container_add(GTK_CONTAINER(err) , label);
+	gtk_widget_show_all(err); 
+  
+}
 
 void choose(GtkWidget *button ,struct param *para)
 {
@@ -47,7 +60,7 @@ void save_img(GtkWidget *button, struct param *para)
 {
   if (para->path == NULL)
   {
-    return ;
+    error();
   }
   else
   {
@@ -111,7 +124,7 @@ void grey (GtkWidget *button , struct param *para)
 {
   if (para->path == NULL)
   {
-    return ;
+    return;
   }
   SDL_Surface *img;
   img = load_image(para->path);
@@ -128,7 +141,7 @@ void black (GtkWidget *button, struct param *para)
 {
   if (para->path == NULL) 
   {
-    return ;
+    return;
   }
   SDL_Surface *img;
   img = load_image(para->path);
@@ -147,7 +160,7 @@ void ocr(GtkWidget *button, struct param *para)
 {
   if (para->path == NULL)
   {
-    return ;
+    return;
   }
   SDL_Surface *img;
   img = load_image(para->path);
@@ -224,5 +237,4 @@ int main(int argc, char* argv[])
   gtk_main();
   return EXIT_SUCCESS;
 }
-
 
