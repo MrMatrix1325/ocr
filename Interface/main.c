@@ -6,6 +6,7 @@
 
 struct param{
 	GtkWidget *img;
+  GtkWidget *but;
   char * path;
   int grey;
   int black;
@@ -36,6 +37,7 @@ void choose(GtkWidget *button ,struct param *para)
                                       NULL);
 
   filter = gtk_file_filter_new();
+  para->but = button;
   gtk_file_filter_add_pixbuf_formats(filter);
   gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(win), filter);
   int res = gtk_dialog_run (GTK_DIALOG (win));
@@ -77,7 +79,7 @@ void save_img(GtkWidget *button, struct param *para)
                                       GTK_RESPONSE_ACCEPT,
                                       NULL);
   chooser = GTK_FILE_CHOOSER (dialog);
-
+  para->but = button;
   gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
   gtk_dialog_run (GTK_DIALOG (dialog));
   if (GTK_RESPONSE_ACCEPT)
@@ -106,10 +108,11 @@ void reset_img(GtkWidget *button, struct param *para)
 {
   if (para->path == NULL)
   {
-    return;
+    return ;
   }
   SDL_Surface *img;
   img = load_image(para->path);
+  para->but = button;
   img = SDL_redim(1100,600,img);
   SDL_SaveBMP(img,"$-redimreset");
   gtk_image_set_from_file(GTK_IMAGE(para->img), "$-redimreset");
@@ -127,6 +130,7 @@ void grey (GtkWidget *button , struct param *para)
     return;
   }
   SDL_Surface *img;
+  para->but = button;
   img = load_image(para->path);
   img = grey_lvl(img);
   img = SDL_redim(1100,600,img);
@@ -144,6 +148,7 @@ void black (GtkWidget *button, struct param *para)
     return;
   }
   SDL_Surface *img;
+  para->but = button;
   img = load_image(para->path);
   img = grey_lvl(img);
   img = black_and_white(img);
@@ -160,9 +165,10 @@ void ocr(GtkWidget *button, struct param *para)
 {
   if (para->path == NULL)
   {
-    return;
+    error();
   }
   SDL_Surface *img;
+  para->but = button;
   img = load_image(para->path);
   img = SDL_redim(1100,600,img);
   img = grey_lvl(img);
