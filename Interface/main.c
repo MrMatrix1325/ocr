@@ -258,17 +258,30 @@ void ocr(GtkWidget *button, struct param *para)
     error();
   }
   SDL_Surface *img;
+  char *text ;
   para->but = button;
   img = load_image(para->path);
   img = SDL_redim(1100,600,img);
   img = grey_lvl(img);
   img = black_and_white(img);
   img = superposition(img);
-  // Segmentation blocs de caracteres
 
-  // RDN
+  binarize(img);
+  img = green(img);
+  
+  img = green2(img);
 
-  // FENETRE + SAVE
+  Bloc_Iteratif(img);
+   
+  //TOUT LE BORDEL
+ 
+  //RDN
+
+  //FENETRE + SAVE
+
+  SDL_FreeSurface(img);
+
+
 }
 
 void OnDestroy()
