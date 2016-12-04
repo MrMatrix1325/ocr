@@ -5,7 +5,7 @@ CFLAGS= -Wall -Wextra -std=c99 -O3 -g
 LDFLAGS=
 LDLIBS= `pkg-config --libs gtk+-2.0 sdl` -lSDL_image 
  
-SRC= main.c image_operation.c
+SRC= main.c pixel_operations.c
 OBJ= ${SRC:.c=.o}
  
 all: main
