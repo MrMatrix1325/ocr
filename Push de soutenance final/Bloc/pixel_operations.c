@@ -271,14 +271,14 @@ void Bloc_Iteratif(SDL_Surface *img)
 	/*FILENAME*/
 	++name;
 	
-	char *s = int2char(name2);
+	//char *s = int2char(name2);
 	++name2;
 
 	binarize(image_decoupee);
 	image_decoupee = Rogne(image_decoupee);
 	image_decoupee = SDL_redim(10, 10, image_decoupee);
 	binarize(image_decoupee);
-	SDL_SaveBMP(image_decoupee, s);
+	SDL_SaveBMP(image_decoupee, filename);
 	SDL_FreeSurface(image_decoupee);
 
         for (int i = x; i <= x2; i++)

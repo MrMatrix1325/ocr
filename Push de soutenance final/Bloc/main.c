@@ -106,6 +106,7 @@ int main(int argc, char* argv[])
 	SDL_Surface* img_green2 = green2(img_green);
 	//SDL_SaveBMP(img_green2, "Test.bmp");
 	SDL_SaveBMP(img_green2, "Droid.bmp");
+	SDL_SaveBMP(img, "Base.bmp");
 
 	/*int* L = malloc(4 * sizeof(int));
 	L[0] = 0;
@@ -117,6 +118,7 @@ int main(int argc, char* argv[])
 	SDL_SaveBMP(image_decoupee, "Test.bmp");*/
 
 	Bloc_Iteratif(img);
+
 	/*printf("%c",(char)97);
 	printf("%c",(char)65);
 	printf("%c",(char)49);*/
